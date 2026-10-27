@@ -1,0 +1,21 @@
+[package]
+name = "game-launcher"
+version = "0.1.0"
+edition = "2024"
+description = "Утиліта для керування локальними копіями власного бінарника під іменами ігрових exe (Discord Detectable API)"
+
+[dependencies]
+# GUI. Без wgpu/accesskit/wayland/x11 — лише glow-бекенд і вбудовані шрифти (є кирилиця).
+eframe = { version = "0.37", default-features = false, features = ["default_fonts", "glow"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# blocking-клієнт працює у фоновому потоці; native-tls = SChannel на Windows (без OpenSSL/cmake/nasm).
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "native-tls", "system-proxy"] }
+
+# Бінарник копіюється для кожної гри — тримаємо його якомога меншим.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
